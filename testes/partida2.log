@@ -1,0 +1,22 @@
+15 ladrao: move(a,b) [OK]
+15 detetive: move(d,c) [OK]
+14 ladrao: move(b,c) [OK]
+14 detetive: fechar(c) [OK]
+
+>>>> Evento roubo(chave_mestra, c, [genero(gen2)])
+13 ladrao: roubar(chave_mestra) [OK]
+13 detetive: pedir_mandato(sus1, [genero(gen2)]) [OK]
+12 ladrao: move(c,b) [OK]
+12 detetive: move(c,b) [OK]
+11 ladrao: move(b,e) [OK]
+11 detetive: move(b,e) [OK]
+
+>>>> Evento roubo(diamante_rosa, e, [altura(170), genero(gen2)])
+10 ladrao: roubar(diamante_rosa) [OK]
+10 detetive: inspecionar [OK]
+9 ladrao: move(e,b) [FALHA]
+9 detetive: nada [OK]
+8 ladrao: move(e,d) [OK]
+8 detetive: move(e,d) [OK]
+S = gSt(thief(loc(d), 0, aparencia([altura(170), genero(gen2)]), diamante_rosa, [], 2), detective(loc(d), mandato(sus1), [genero(gen2)]), diamante_rosa, [], evt([], []), capturado, 15),
+V = detetive.
