@@ -80,14 +80,18 @@ String (log)  --parseLog-->  [Registro]  --gerarDot-->  String (.dot)
   Todo o estado da conversão flui por parâmetros; os agrupamentos de
   arestas/roubos e a separação de argumentos usam recursão com
   acumuladores (`separarArgs` carrega a profundidade de parênteses como
-  parâmetro).
+  parâmetro; `semRepeticao` acumula os elementos já vistos).
 - **Funções puras**: `Parser` e `GeradorDot` são inteiramente puros —
   recebem `String`/listas e devolvem novos valores. A leitura do log e a
   escrita do `.dot` acontecem apenas na função monádica `main`
   (`Main.hs`), como exige o enunciado.
-- **Funções de alta ordem**: o processamento usa `mapMaybe`, `map`,
-  `filter` (na forma de compreensões de lista com guardas), `nub`,
-  `sort`, `intercalate`, `unlines` e composição de funções (`.`).
+- **Funções de alta ordem e recursão explícita**: além de `map`,
+  `unlines`, compreensões de lista com guardas e composição de funções
+  (`.`), as funções auxiliares centrais foram escritas por recursão
+  explícita em vez de importadas prontas: `filtrarJust` (equivalente a
+  `mapMaybe`), `semRepeticao` (equivalente a `nub`), `quickSortPor`
+  (ordenação por comparador) e `juntarCom` (equivalente a
+  `intercalate`).
 - **Casamento de padrões**: cada comando do log é interpretado por
   padrões — `termoParaAcao "move" [o,d] = Move o d`,
   `termoParaAcao "roubar" [i] = Roubar i`, etc. As compreensões de lista

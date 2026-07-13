@@ -17,8 +17,6 @@ module GeradorDot
   ( gerarDot
   ) where
 
-import Data.List (intercalate, nub, sort)
-
 import Tipos
 
 -- | Ponto de entrada do módulo: converte os registros do log no texto
@@ -77,17 +75,52 @@ roubos regs = [ (cidade, item) | RegistroRoubo item cidade <- regs ]
 -- aresta foi percorrida (ex.: @c -> d@ nos turnos 16 e 20).
 agruparArestas :: [(String, String, Int)] -> [((String, String), [Int])]
 agruparArestas movs =
-  [ (par, turnosDe par) | par <- arestasUnicas ]
+  [ (par, turnosDe par) | par <- arestasSemRepeticao ]
   where
-    arestasUnicas   = nub (map (\(o, d, _) -> (o, d)) movs)
-    turnosDe (o, d) = sort [ t | (o', d', t) <- movs, o' == o, d' == d ]
+    arestasSemRepeticao = semRepeticao [ (o, d) | (o, d, _) <- movs ]
+    turnosDe (o, d)     = quickSortPor (<) [ t | (o', d', t) <- movs, o' == o, d' == d ]
 
 -- | Agrupa os roubos por cidade, reunindo todos os itens roubados nela.
 agruparRoubos :: [(String, String)] -> [(String, [String])]
 agruparRoubos rs =
-  [ (cidade, itensDe cidade) | cidade <- nub (map fst rs) ]
+  [ (cidade, itensDe cidade) | cidade <- semRepeticao (map fst rs) ]
   where
     itensDe cidade = [ item | (c, item) <- rs, c == cidade ]
+
+-- ---------------------------------------------------------------------
+-- Funções auxiliares (recursão explícita com acumuladores)
+-- ---------------------------------------------------------------------
+
+-- | Remove repetições de uma lista preservando a ordem da primeira
+-- ocorrência, usando recursão com um acumulador dos elementos já vistos.
+semRepeticao :: Eq a => [a] -> [a]
+semRepeticao = semRepeticaoAc []
+  where
+    semRepeticaoAc _ [] = []
+    semRepeticaoAc vistos (x : xs)
+      | x `elemC` vistos = semRepeticaoAc vistos xs
+      | otherwise         = x : semRepeticaoAc (x : vistos) xs
+
+    elemC _ []       = False
+    elemC y (z : zs) = y == z || elemC y zs
+
+-- | Ordenação por comparador explícito (quicksort): particiona a lista
+-- em menores e não-menores que o pivô e concatena os resultados
+-- recursivos.
+quickSortPor :: (a -> a -> Bool) -> [a] -> [a]
+quickSortPor _        []       = []
+quickSortPor _        [x]      = [x]
+quickSortPor menorQue (x : xs) =
+     quickSortPor menorQue [ y | y <- xs, menorQue y x ]
+  ++ [x]
+  ++ quickSortPor menorQue [ y | y <- xs, not (menorQue y x) ]
+
+-- | Junta uma lista de strings intercalando um separador entre elas
+-- (equivalente a 'Data.List.intercalate').
+juntarCom :: String -> [String] -> String
+juntarCom _   []       = ""
+juntarCom _   [s]      = s
+juntarCom sep (s : ss) = s ++ sep ++ juntarCom sep ss
 
 -- ---------------------------------------------------------------------
 -- Impressão das linhas DOT
@@ -100,7 +133,7 @@ noRoubo :: (String, [String]) -> String
 noRoubo (cidade, itens) =
   "    " ++ cidade
         ++ " [shape=doublecircle, style=filled, fillcolor=gold, label=\""
-        ++ cidade ++ "\\n(Roubo: " ++ intercalate ", " itens ++ ")\"];"
+        ++ cidade ++ "\\n(Roubo: " ++ juntarCom ", " itens ++ ")\"];"
 
 -- | Aresta colorida com os turnos no rótulo, ex.:
 --
@@ -109,4 +142,4 @@ aresta :: String -> ((String, String), [Int]) -> String
 aresta cor ((origem, destino), turnos) =
   "    " ++ origem ++ " -> " ++ destino
         ++ " [color=\"" ++ cor ++ "\", label=\""
-        ++ intercalate ", " (map (("T" ++) . show) turnos) ++ "\"];"
+        ++ juntarCom ", " (map (("T" ++) . show) turnos) ++ "\"];"

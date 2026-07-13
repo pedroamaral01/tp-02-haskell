@@ -17,17 +17,24 @@ module Parser
   ) where
 
 import Data.Char (isDigit, isSpace)
-import Data.List (dropWhileEnd)
-import Data.Maybe (mapMaybe)
 
 import Tipos
 
 -- | Converte o conteúdo completo do log em uma lista de registros.
 --
 -- Composição de funções de alta ordem: quebra o texto em linhas e
--- mantém apenas as que o parser reconhece ('mapMaybe').
+-- mantém apenas as que o parser reconhece ('filtrarJust').
 parseLog :: String -> [Registro]
-parseLog = mapMaybe parseLinha . lines
+parseLog = filtrarJust parseLinha . lines
+
+-- | Aplica uma função que pode falhar a cada elemento e mantém apenas
+-- os resultados bem-sucedidos (equivalente a 'Data.Maybe.mapMaybe').
+filtrarJust :: (a -> Maybe b) -> [a] -> [b]
+filtrarJust _ []       = []
+filtrarJust f (x : xs) =
+  case f x of
+    Just y  -> y : filtrarJust f xs
+    Nothing -> filtrarJust f xs
 
 -- | Interpreta uma única linha do log.
 parseLinha :: String -> Maybe Registro
@@ -144,4 +151,10 @@ separarArgs = go (0 :: Int) ""
 
 -- | Remove espaços em branco das duas extremidades.
 trim :: String -> String
-trim = dropWhile isSpace . dropWhileEnd isSpace
+trim = dropWhile isSpace . dropWhileFim isSpace
+
+-- | Remove do final da string os caracteres que satisfazem o predicado
+-- (equivalente a 'Data.List.dropWhileEnd'): inverte, descarta do início
+-- e inverte de volta.
+dropWhileFim :: (Char -> Bool) -> String -> String
+dropWhileFim p = reverse . dropWhile p . reverse
