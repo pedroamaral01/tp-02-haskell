@@ -1,0 +1,29 @@
+26 ladrao: disfarce([omitir(altura(alta)),omitir(genero(gen1)),omitir(cor_olhos(azul))])[OK]
+26 detetive: fechar(a)[OK]
+25 ladrao: move(c,b)[OK]
+25 detetive: move(d,e)[OK]
+
+>>>> Evento roubo(ficha_magna,b,[none])
+24 ladrao: roubar(ficha_magna)[OK]
+24 detetive: move(e,f)[OK]
+23 ladrao: move(b,e)[OK]
+23 detetive: move(f,c)[OK]
+
+>>>> Evento roubo(pino_mestre,e,[none,none])
+22 ladrao: roubar(pino_mestre)[OK]
+22 detetive: move(c,b)[OK]
+21 ladrao: move(e,d)[OK]
+21 detetive: move(b,e)[OK]
+
+>>>> Evento roubo(nucleo_jade,d,[none,none,none])
+20 ladrao: roubar(nucleo_jade)[OK]
+20 detetive: move(e,f)[OK]
+19 ladrao: move(d,a)[OK]
+19 detetive: move(f,e)[OK]
+
+>>>> Evento roubo(colar_jade,a,[none,none,none,cor_cabelo(preto)])
+18 ladrao: roubar(colar_jade)[OK]
+18 detetive: move(e,d)[OK]
+17 ladrao: move(a,b)[OK]
+detetive
+Vencedor = detetive.

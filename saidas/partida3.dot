@@ -1,0 +1,27 @@
+digraph JogoDetetiveLadrao {
+    // Definicoes globais
+    node [shape=circle];
+
+    // Cidades onde ocorreram roubos
+    b [shape=doublecircle, style=filled, fillcolor=gold, label="b\n(Roubo: ficha_magna)"];
+    e [shape=doublecircle, style=filled, fillcolor=gold, label="e\n(Roubo: pino_mestre)"];
+    d [shape=doublecircle, style=filled, fillcolor=gold, label="d\n(Roubo: nucleo_jade)"];
+    a [shape=doublecircle, style=filled, fillcolor=gold, label="a\n(Roubo: colar_jade)"];
+
+    // Caminho do Ladrao (vermelho)
+    c -> b [color="red", label="T25"];
+    b -> e [color="red", label="T23"];
+    e -> d [color="red", label="T21"];
+    d -> a [color="red", label="T19"];
+    a -> b [color="red", label="T17"];
+
+    // Caminho do Detetive (azul)
+    d -> e [color="blue", label="T25"];
+    e -> f [color="blue", label="T20, T24"];
+    f -> c [color="blue", label="T23"];
+    c -> b [color="blue", label="T22"];
+    b -> e [color="blue", label="T21"];
+    f -> e [color="blue", label="T19"];
+    e -> d [color="blue", label="T18"];
+
+}
